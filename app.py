@@ -11,17 +11,8 @@ import time
 
 app = Flask(__name__)
 
-# Load configuration
-def load_config():
-    try:
-        with open('config.json', 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        print("Warning: config.json not found. Please copy config.example.json to config.json and update with your API key.")
-        return {"alpha_vantage_api_key": "demo"}
-
-config = load_config()
-ALPHA_VANTAGE_API_KEY = config['alpha_vantage_api_key']
+# You should replace this with your Alpha Vantage API key
+ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY', 'demo')
 BASE_URL = 'https://www.alphavantage.co/query'
 
 # Cache for 1 minute to respect API limits while maintaining fresh data
