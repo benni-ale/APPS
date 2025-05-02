@@ -282,5 +282,52 @@ def search_company():
 def marketcap_view():
     return render_template('marketcap.html')
 
+@app.route('/get_close_volume_data', methods=['POST'])
+def get_close_volume_data():
+    try:
+        symbol = request.json['symbol']
+        period = request.json.get('period', '1mo')
+        # Recupera dati daily
+        data = get_api_data('TIME_SERIES_DAILY', symbol, outputsize='full')
+        time_series_key = 'Time Series (Daily)'
+        if 'Error Message' in data or time_series_key not in data or not isinstance(data[time_series_key], dict) or not data[time_series_key]:
+            return jsonify({'success': False, 'error': 'Dati non disponibili per questo simbolo o periodo.'})
+        time_series = data[time_series_key]
+        df = pd.DataFrame.from_dict(time_series, orient='index')
+        df.index = pd.to_datetime(df.index)
+        df = df.sort_index()
+        # Filtra periodo
+        if period == '1d':
+            df = df[df.index >= (datetime.now() - timedelta(days=1))]
+        elif period == '5d':
+            df = df[df.index >= (datetime.now() - timedelta(days=5))]
+        elif period == '1mo':
+            df = df[df.index >= (datetime.now() - timedelta(days=30))]
+        elif period == '3mo':
+            df = df[df.index >= (datetime.now() - timedelta(days=90))]
+        elif period == '6mo':
+            df = df[df.index >= (datetime.now() - timedelta(days=180))]
+        elif period == '1y':
+            df = df[df.index >= (datetime.now() - timedelta(days=365))]
+        # Estrai close e volume
+        df['close'] = df['4. close'].astype(float)
+        df['volume'] = df['5. volume'].astype(float)
+        # Normalizza volume tra 0 e 1
+        min_vol = df['volume'].min()
+        max_vol = df['volume'].max()
+        if max_vol > min_vol:
+            df['volume_norm'] = (df['volume'] - min_vol) / (max_vol - min_vol)
+        else:
+            df['volume_norm'] = 0
+        # Prepara dati per il frontend
+        return jsonify({
+            'success': True,
+            'dates': [d.strftime('%Y-%m-%d') for d in df.index],
+            'close': df['close'].tolist(),
+            'volume_norm': df['volume_norm'].tolist()
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True) 

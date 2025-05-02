@@ -72,5 +72,87 @@
             </div>
         </div>
     </div>
+    <script>
+        let isLoading = false;
+        function setLoading(loading) {
+            isLoading = loading;
+            document.getElementById('searchButton').disabled = loading;
+            document.getElementById('stockSymbol').disabled = loading;
+            document.getElementById('timePeriod').disabled = loading;
+            document.getElementById('searchButton').textContent = loading ? 'Loading...' : 'Search';
+        }
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.color = '#d90429';
+            errorDiv.style.display = 'block';
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+        }
+        function getCloseVolumeData() {
+            if (isLoading) return;
+            const symbol = document.getElementById('stockSymbol').value.toUpperCase();
+            const period = document.getElementById('timePeriod').value;
+            if (!symbol) {
+                showError('Please enter a stock symbol');
+                return;
+            }
+            setLoading(true);
+            fetch('/get_close_volume_data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symbol: symbol, period: period })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const traceClose = {
+                        x: data.dates,
+                        y: data.close,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Close',
+                        line: { color: '#007bff', width: 2 }
+                    };
+                    const traceVolume = {
+                        x: data.dates,
+                        y: data.volume_norm,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Normalized Volume',
+                        fill: 'tozeroy',
+                        yaxis: 'y2',
+                        line: { color: 'rgba(40,167,69,0.4)', width: 0 },
+                        fillcolor: 'rgba(40,167,69,0.18)'
+                    };
+                    const layout = {
+                        title: `${symbol} - Close & Normalized Volume`,
+                        xaxis: { title: 'Date' },
+                        yaxis: { title: 'Close Price', side: 'left', showgrid: true },
+                        yaxis2: {
+                            title: 'Normalized Volume',
+                            overlaying: 'y',
+                            side: 'right',
+                            showgrid: false,
+                            range: [0, 1],
+                            tickformat: '.0%',
+                            color: '#28a745'
+                        },
+                        legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.7)' },
+                        template: 'plotly_white',
+                        margin: { t: 60, l: 60, r: 60, b: 60 }
+                    };
+                    Plotly.newPlot('closeVolumeChart', [traceClose, traceVolume], layout, {responsive: true});
+                } else {
+                    showError(data.error);
+                }
+            })
+            .catch(() => showError('An error occurred while fetching data'))
+            .finally(() => setLoading(false));
+        }
+        document.getElementById('searchButton').onclick = getCloseVolumeData;
+        document.getElementById('stockSymbol').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isLoading) getCloseVolumeData();
+        });
+    </script>
 </body>
 </html> 
