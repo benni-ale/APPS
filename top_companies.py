@@ -1,0 +1,22 @@
+TOP_COMPANIES = [
+    {"ticker": "AAPL", "name": "Apple", "earnings": "125.57B", "country": "USA", "logo": "https://logo.clearbit.com/apple.com"},
+    {"ticker": "MSFT", "name": "Microsoft", "earnings": "89.47B", "country": "USA", "logo": "https://logo.clearbit.com/microsoft.com"},
+    {"ticker": "GOOGL", "name": "Alphabet (Google)", "earnings": "73.80B", "country": "USA", "logo": "https://logo.clearbit.com/abc.xyz"},
+    {"ticker": "AMZN", "name": "Amazon", "earnings": "30.43B", "country": "USA", "logo": "https://logo.clearbit.com/amazon.com"},
+    {"ticker": "META", "name": "Meta Platforms", "earnings": "39.10B", "country": "USA", "logo": "https://logo.clearbit.com/meta.com"},
+    {"ticker": "TSLA", "name": "Tesla", "earnings": "15.00B", "country": "USA", "logo": "https://logo.clearbit.com/tesla.com"},
+    {"ticker": "BRK-B", "name": "Berkshire Hathaway", "earnings": "115.57B", "country": "USA", "logo": "https://logo.clearbit.com/berkshirehathaway.com"},
+    {"ticker": "NVDA", "name": "NVIDIA", "earnings": "29.76B", "country": "USA", "logo": "https://logo.clearbit.com/nvidia.com"},
+    {"ticker": "JPM", "name": "JPMorgan Chase", "earnings": "48.33B", "country": "USA", "logo": "https://logo.clearbit.com/jpmorganchase.com"},
+    {"ticker": "V", "name": "Visa", "earnings": "17.27B", "country": "USA", "logo": "https://logo.clearbit.com/visa.com"},
+    {"ticker": "UNH", "name": "UnitedHealth Group", "earnings": "22.38B", "country": "USA", "logo": "https://logo.clearbit.com/unitedhealthgroup.com"},
+    {"ticker": "XOM", "name": "Exxon Mobil", "earnings": "55.74B", "country": "USA", "logo": "https://logo.clearbit.com/exxonmobil.com"},
+    {"ticker": "PG", "name": "Procter & Gamble", "earnings": "14.74B", "country": "USA", "logo": "https://logo.clearbit.com/pg.com"},
+    {"ticker": "MA", "name": "Mastercard", "earnings": "11.19B", "country": "USA", "logo": "https://logo.clearbit.com/mastercard.com"},
+    {"ticker": "JNJ", "name": "Johnson & Johnson", "earnings": "17.94B", "country": "USA", "logo": "https://logo.clearbit.com/jnj.com"},
+    {"ticker": "LLY", "name": "Eli Lilly", "earnings": "5.24B", "country": "USA", "logo": "https://logo.clearbit.com/lilly.com"},
+    {"ticker": "HD", "name": "Home Depot", "earnings": "17.10B", "country": "USA", "logo": "https://logo.clearbit.com/homedepot.com"},
+    {"ticker": "MRK", "name": "Merck & Co.", "earnings": "14.52B", "country": "USA", "logo": "https://logo.clearbit.com/merck.com"},
+    {"ticker": "ABBV", "name": "AbbVie", "earnings": "11.84B", "country": "USA", "logo": "https://logo.clearbit.com/abbvie.com"},
+    {"ticker": "PEP", "name": "PepsiCo", "earnings": "9.08B", "country": "USA", "logo": "https://logo.clearbit.com/pepsico.com"}
+] 
