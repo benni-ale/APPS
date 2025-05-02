@@ -329,5 +329,39 @@ def get_close_volume_data():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+@app.route('/get_news', methods=['POST'])
+def get_news():
+    try:
+        params = request.json
+        api_params = {
+            'function': 'NEWS_SENTIMENT',
+            'apikey': ALPHA_VANTAGE_API_KEY
+        }
+        if 'tickers' in params and params['tickers']:
+            api_params['tickers'] = params['tickers']
+        else:
+            return jsonify({'success': False, 'error': 'Ticker obbligatorio'}), 400
+        if 'topics' in params and params['topics']:
+            api_params['topics'] = params['topics']
+        if 'time_from' in params and params['time_from']:
+            api_params['time_from'] = params['time_from']
+        if 'time_to' in params and params['time_to']:
+            api_params['time_to'] = params['time_to']
+        if 'sort' in params and params['sort']:
+            api_params['sort'] = params['sort']
+        if 'limit' in params and params['limit']:
+            api_params['limit'] = params['limit']
+        resp = requests.get(BASE_URL, params=api_params)
+        data = resp.json()
+        if 'feed' not in data:
+            return jsonify({'success': False, 'error': data.get('Information', 'Nessuna news trovata o limite API raggiunto')})
+        return jsonify({'success': True, 'feed': data['feed']})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/news')
+def news_page():
+    return render_template('news.html')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True) 
