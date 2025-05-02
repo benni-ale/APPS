@@ -270,5 +270,9 @@ def api_top_companies():
 def search_company():
     return render_template('search.html')
 
+@app.route('/marketcap')
+def marketcap_view():
+    return render_template('marketcap.html')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True) 

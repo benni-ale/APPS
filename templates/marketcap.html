@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Cap View - Top Companies</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sparkline@0.0.6/build/sparkline.js"></script>
+    <style>
+        body {
+            background: #f8fafc;
+            color: #222;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+        .marketcap-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem 0;
+            text-align: center;
+        }
+        .marketcap-table {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+        th, td {
+            vertical-align: middle !important;
+            text-align: center;
+        }
+        .company-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: #f3f3f3;
+            margin-right: 8px;
+        }
+        .sparkline {
+            width: 80px;
+            height: 28px;
+        }
+        .flag {
+            width: 28px;
+            border-radius: 4px;
+            margin-left: 4px;
+        }
+        .change-pos { color: #009900; font-weight: 600; }
+        .change-neg { color: #d90429; font-weight: 600; }
+        .loader {
+            margin: 2rem auto;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #007bff;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 700px) {
+            .marketcap-title { font-size: 1.2rem; }
+            .sparkline { width: 50px; }
+            .company-logo { width: 24px; height: 24px; }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">Stock Market Viewer</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/marketcap">Market Cap View</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/search">Search Company</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="marketcap-title">Largest Companies by Market Cap</div>
+    <div id="table-loader" class="loader"></div>
+    <div class="marketcap-table mt-3 p-2" style="display:none;">
+        <table class="table table-hover align-middle" id="companies-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Market Cap</th>
+                    <th>Price</th>
+                    <th>Today</th>
+                    <th>Price (30d)</th>
+                    <th>Country</th>
+                </tr>
+            </thead>
+            <tbody id="companies-tbody">
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function formatNumber(num) {
+        if (!num || num === 'N/A') return 'N/A';
+        const n = parseFloat(num);
+        if (isNaN(n)) return 'N/A';
+        if (n >= 1e12) return '$ ' + (n / 1e12).toFixed(3) + ' T';
+        if (n >= 1e9) return '$ ' + (n / 1e9).toFixed(3) + ' B';
+        if (n >= 1e6) return '$ ' + (n / 1e6).toFixed(3) + ' M';
+        if (n >= 1e3) return '$ ' + (n / 1e3).toFixed(3) + ' K';
+        return '$ ' + n.toFixed(2);
+    }
+    function getFlag(country) {
+        if (country === 'USA') return '<img class="flag" src="https://flagcdn.com/us.svg" alt="USA">';
+        return '';
+    }
+    function renderSparkline(data, color) {
+        if (!data || data.length === 0) return '';
+        // Use sparkline.js
+        const id = 'spark_' + Math.random().toString(36).substring(2, 10);
+        setTimeout(() => {
+            Sparkline.draw(document.getElementById(id), data, { lineColor: color, endColor: color });
+        }, 0);
+        return `<canvas id="${id}" class="sparkline"></canvas>`;
+    }
+    fetch('/api/top_companies')
+        .then(res => res.json())
+        .then(data => {
+            let companies = data.companies;
+            // Sort by Market Cap desc
+            companies = companies.filter(c => c.market_cap && c.market_cap !== 'N/A').sort((a, b) => parseFloat(b.market_cap) - parseFloat(a.market_cap));
+            const tbody = document.getElementById('companies-tbody');
+            tbody.innerHTML = '';
+            companies.forEach((c, i) => {
+                const change = parseFloat(c.change_percent);
+                const changeClass = change >= 0 ? 'change-pos' : 'change-neg';
+                const sparkColor = change >= 0 ? '#009900' : '#d90429';
+                tbody.innerHTML += `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td style="text-align:left;">
+                        <img src="${c.logo}" class="company-logo" alt="logo">
+                        <span style="font-weight:600;">${c.name}</span><br>
+                        <span style="font-size:0.95em;color:#888;">${c.ticker}</span>
+                    </td>
+                    <td>${formatNumber(c.market_cap)}</td>
+                    <td>$${c.price.toFixed(2)}</td>
+                    <td class="${changeClass}">${c.change_percent}</td>
+                    <td>${renderSparkline(c.sparkline, sparkColor)}</td>
+                    <td>${getFlag(c.country)}</td>
+                </tr>
+                `;
+            });
+            document.getElementById('table-loader').style.display = 'none';
+            document.querySelector('.marketcap-table').style.display = '';
+        });
+</script>
+</body>
+</html> 
