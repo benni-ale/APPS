@@ -266,6 +266,14 @@ def api_top_companies():
         })
     return jsonify({'companies': results})
 
+@app.route('/sma')
+def sma_plot():
+    return render_template('sma.html')
+
+@app.route('/close-volume')
+def close_volume_plot():
+    return render_template('close_volume.html')
+
 @app.route('/search')
 def search_company():
     return render_template('search.html')
