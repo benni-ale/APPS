@@ -74,6 +74,12 @@ def get_stock_data():
         sma = get_api_data('SMA', symbol, interval='daily', time_period='20', series_type='close')
         
         # Parse time series data
+        if time_series_key not in data or not isinstance(data[time_series_key], dict) or not data[time_series_key]:
+            return jsonify({
+                'success': False,
+                'error': 'Dati non disponibili per questo simbolo o periodo. Prova a cambiare periodo o riprova più tardi.'
+            })
+
         time_series = data[time_series_key]
         df = pd.DataFrame.from_dict(time_series, orient='index')
         df.index = pd.to_datetime(df.index)

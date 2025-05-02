@@ -8,25 +8,25 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
         body {
-            background-color: #1a1a1a;
-            color: #ffffff;
+            background-color: #f8f9fa;
+            color: #222;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .card {
-            background-color: #2d2d2d;
-            border: none;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
         }
         .form-control, .form-select {
-            background-color: #3d3d3d;
-            border: none;
-            color: #ffffff;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            color: #222;
         }
         .form-control:focus, .form-select:focus {
-            background-color: #3d3d3d;
-            color: #ffffff;
-            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            background-color: #fff;
+            color: #222;
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.10);
         }
         .btn-primary {
             background-color: #007bff;
@@ -34,7 +34,7 @@
             padding: 0.5rem 1.5rem;
         }
         .btn-primary:disabled {
-            background-color: #0056b3;
+            background-color: #b3d7ff;
             cursor: not-allowed;
         }
         .stock-info {
@@ -43,6 +43,9 @@
         .info-card {
             padding: 15px;
             margin-bottom: 10px;
+            background: #f5f7fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
             transition: transform 0.2s;
         }
         .info-card:hover {
@@ -53,22 +56,23 @@
             pointer-events: none;
         }
         #errorMessage {
-            color: #ff6b6b;
+            color: #ff4444;
             margin-top: 10px;
             text-align: center;
             display: none;
         }
         .positive {
-            color: #00ff00;
+            color: #009900;
         }
         .negative {
-            color: #ff4444;
+            color: #d90429;
         }
         .company-info {
             padding: 20px;
             margin-top: 20px;
-            background-color: #2d2d2d;
+            background-color: #fff;
             border-radius: 10px;
+            border: 1px solid #e0e0e0;
         }
         .company-description {
             font-size: 0.9rem;
@@ -233,7 +237,7 @@
             .then(data => {
                 if (data.success) {
                     const graph = JSON.parse(data.graph);
-                    Plotly.newPlot('stockChart', graph.data, graph.layout);
+                    Plotly.newPlot('stockChart', graph.data, {...graph.layout, template: 'plotly_white'});
                     
                     // Update company info
                     document.getElementById('companyName').textContent = data.info.company_name;
