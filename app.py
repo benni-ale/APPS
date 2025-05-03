@@ -240,6 +240,15 @@ def api_top_companies():
         overview_data = overview_resp.json()
         market_cap = overview_data.get('MarketCapitalization', 'N/A')
         pe_ratio = overview_data.get('PERatio', 'N/A')
+        shares_outstanding = overview_data.get('SharesOutstanding')
+        # Calcolo market cap live se possibile
+        if shares_outstanding and price:
+            try:
+                market_cap_live = float(shares_outstanding) * price
+            except Exception:
+                market_cap_live = market_cap
+        else:
+            market_cap_live = market_cap
         # Get sparkline (last 30 closes)
         ts_url = 'https://www.alphavantage.co/query'
         ts_params = {
@@ -260,7 +269,7 @@ def api_top_companies():
             'change': change,
             'change_percent': change_percent,
             'volume': volume,
-            'market_cap': market_cap,
+            'market_cap': market_cap_live,
             'pe_ratio': pe_ratio,
             'sparkline': closes
         })
