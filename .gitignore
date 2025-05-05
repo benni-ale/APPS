@@ -27,3 +27,10 @@ ENV/
 *.swp
 .DS_Store
 config.json 
+output/
+processed/
+disconnected/output/
+disconnected/processed/
+disconnected/config.json
+disconnected/sp500_tickers.txt
+disconnected/news.db 
